@@ -19,16 +19,16 @@
   "require-dev": {
     "phpunit/phpunit": "~4.0"
   },
-  
+
   "autoload": {
     "psr-4": {
-      "Persistence\\": "src/"
+      "Verem\\Persistence\\": "src/"
     }
   },
 
   "autoload-dev":{
     "psr-4": {
-      "Persistence\\Test\\": "tests/"
+      "Verem\\Persistence\\Test\\": "tests/"
     }
   }
 }
