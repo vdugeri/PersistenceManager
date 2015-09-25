@@ -1,0 +1,34 @@
+{
+  "name": "verem/persitencemanager",
+  "description": "A simple orm for lightweight applications",
+  "license": "MIT",
+  "keywords": [
+    "orm", "database", "persistence", "sql"
+  ],
+  "authors": [
+    {
+      "name": "Verem Dugeri",
+      "email": "danverem@gmail.com"
+    }
+  ],
+
+  "require":{
+    "php": ">=5.5.1"
+  },
+
+  "require-dev": {
+    "phpunit/phpunit": "~4.0"
+  },
+  
+  "autoload": {
+    "psr-4": {
+      "Persistence\\": "src/"
+    }
+  },
+
+  "autoload-dev":{
+    "psr-4": {
+      "Persistence\\Test\\": "tests/"
+    }
+  }
+}
