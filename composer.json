@@ -22,13 +22,13 @@
 
   "autoload": {
     "psr-4": {
-      "Verem\\Persistence\\": "src/"
+      "Verem\\persistence\\": "src/"
     }
   },
 
   "autoload-dev":{
     "psr-4": {
-      "Verem\\Persistence\\Test\\": "tests/"
+      "Verem\\persistence\\Test\\": "tests/"
     }
   }
 }
