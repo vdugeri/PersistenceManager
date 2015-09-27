@@ -33,7 +33,8 @@ class InflectTest extends \PHPUnit_Framework_TestCase {
 			['hand', 'hands'],
 			['child', 'children'],
 			['user', 'users'],
-			['foot', 'feet']
+			['foot', 'feet'],
+			['analysis', 'analyses']
 		];
 	}
 }

@@ -10,12 +10,13 @@ namespace Verem\persistence;
 
 abstract class Model
 {
-	private $class;
+	private $className;
 
     public function __construct()
     {
 		$reflection = new \ReflectionClass($this);
-		$this->class = $reflection->getName();
+		$class = $reflection->getName();
+		$this->className = substr(strrchr($class, '\\'), 1);
     }
 
 	/**
@@ -26,7 +27,7 @@ abstract class Model
 	 */
 	protected function getClass()
 	{
-		return $this->class;
+		return $this->className;
 	}
 
 
@@ -53,16 +54,12 @@ abstract class Model
     }
 
 	/**
-	 * @param $id
 	 *
+	 * @param $id
 	 * find and return a record from db
+	 *
+	 * @return mixed
 	 */
-
-	protected function getTable($class)
-	{
-		$table = strtolower($this->class);
-		return $table;
-	}
     public function find($id)
     {
     }
@@ -95,4 +92,15 @@ abstract class Model
     public function destroy($id)
     {
     }
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getTable()
+	{
+		$splitter = new Splitter($this->getClass());
+		$splittedString = $splitter->format();
+		return  Inflect::pluralize($splittedString);
+	}
 }
