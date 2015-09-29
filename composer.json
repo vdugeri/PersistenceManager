@@ -3,7 +3,7 @@
   "description": "A simple orm for lightweight applications",
   "license": "MIT",
   "keywords": [
-    "orm", "database", "persistence", "sql"
+    "orm", "database", "persistence", "sql", "php"
   ],
   "authors": [
     {
@@ -13,7 +13,8 @@
   ],
 
   "require":{
-    "php": ">=5.5.1"
+    "php": ">=5.5.1",
+    "vlucas/phpdotenv": "^2.0"
   },
 
   "require-dev": {
@@ -22,7 +23,8 @@
 
   "autoload": {
     "psr-4": {
-      "Verem\\persistence\\": "src/"
+      "Verem\\persistence\\": "src/",
+      "Verem\\Persistence\\Base": "src/Base"
     }
   },
 

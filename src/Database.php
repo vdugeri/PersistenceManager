@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: andela
+ * @author: Verem Dugeri
  * Date: 9/25/15
  * Time: 10:26 PM
  */
@@ -10,8 +10,7 @@ namespace Verem\persistence;
 
 abstract class Database
 {
-
-	private $dbConnection;
+    private $dbConnection;
     public function __construct($connection, $user = '', $password = '', $db='test', $host='')
     {
         $this->initConnection($connection, $user, $password, $db, $host);
@@ -27,34 +26,34 @@ abstract class Database
                 try {
                     $dbh = new \PDO($dsn, $user, $password);
                 } catch (\PDOException $exception) {
-					return "Error: {$exception->getMessage()}";
+                    return "Error: {$exception->getMessage()}";
                 }
 
-				$this->dbConnection = $dbh;
+                $this->dbConnection = $dbh;
                 break;
 
             case 'pgsql':
                 //TODO: connect to PgSQL and return an instance
                 break;
-            case 'sqlite':
-                try{
-					$dbh = new \PDO("sqlite:{$db}");
-				}catch (\PDOException $e) {
-					return "Error: {$e->getMessage()}";
-				}
 
-				$this->dbConnection = $dbh;
+            case 'sqlite':
+                try {
+                    $dbh = new \PDO("sqlite:{$db}");
+                } catch (\PDOException $e) {
+                    return "Error: {$e->getMessage()}";
+                }
+
+                $this->dbConnection = $dbh;
                 break;
         }
     }
 
-	public function getConnection()
-	{
-		return $this->dbConnection;
-	}
+    public function getConnection()
+    {
+        return $this->dbConnection;
+    }
 
-	public function setTableName($table)
-	{
-
-	}
+    public function setTableName($table)
+    {
+    }
 }

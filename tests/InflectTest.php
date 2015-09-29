@@ -9,7 +9,7 @@
 namespace Verem\persistence\Test;
 
 
-use Verem\persistence\Inflect;
+use Verem\persistence\Base\Inflect;
 
 class InflectTest extends \PHPUnit_Framework_TestCase {
 

@@ -9,6 +9,8 @@
 namespace Verem\persistence;
 
 
+use Verem\persistence\Base\Model;
+
 class UserRole extends Model {
 
 }
