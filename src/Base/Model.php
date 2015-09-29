@@ -71,11 +71,18 @@ abstract class Model extends Connector
     public static function find($id)
     {
         $table= self::$tableName;
-        $connection = static::createConnection();
-        $statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
-		$statement->bindParam(1, $id);
-		$statement->execute();
-		return $statement->fetchAll();
+
+		try{
+			$connection = static::createConnection();
+			$statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
+			$statement->bindParam(1, $id);
+			$statement->execute();
+			return $statement->fetchAll();
+		} catch (PDOException $e) {
+			echo $e->getMessage();
+		}
+
+
     }
 
     /**
