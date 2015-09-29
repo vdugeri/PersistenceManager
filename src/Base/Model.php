@@ -10,6 +10,7 @@ namespace Verem\persistence\Base;
 
 use Verem\persistence\Connector;
 use PDOException;
+use Verem\Persistence\Exceptions\DatabaseException;
 
 abstract class Model extends Connector
 {
@@ -17,10 +18,10 @@ abstract class Model extends Connector
     private static $tableName;
     public function __construct()
     {
-        $reflection = new \ReflectionClass($this);
-        $class = $reflection->getName();
-        self::$className = substr(strrchr($class, '\\'), 1);
-        self::$tableName = static::getTable();
+        $reflection 		= 	new \ReflectionClass($this);
+        $class 				= 	$reflection->getName();
+        self::$className 	= 	substr(strrchr($class, '\\'), 1);
+        self::$tableName 	= 	static::getTable();
     }
 
     /**
@@ -45,7 +46,7 @@ abstract class Model extends Connector
             $statement = static::createConnection();
             return $statement->query("SELECT * FROM {$table}")->fetchAll();
         } catch (PDOException $e) {
-            die($e->getMessage());
+            throw new DatabaseException($e);
         } finally {
             $statement = null;
         }
@@ -60,29 +61,29 @@ abstract class Model extends Connector
     }
 
 
-	/**
-	 * @param $id
-	 * @return array
-	 *
-	 * Fetches a model, from the database that
-	 * matches the specified $id.
-	 */
+    /**
+     * @param $id
+     * @return array
+     *
+     * Fetches a model, from the database that
+     * matches the specified $id.
+     */
 
     public static function find($id)
     {
         $table= self::$tableName;
 
-		try{
-			$connection = static::createConnection();
-			$statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
-			$statement->bindParam(1, $id);
-			$statement->execute();
-			return $statement->fetchAll();
-		} catch (PDOException $e) {
-			echo $e->getMessage();
+        try {
+            $connection = static::createConnection();
+            $statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
+            $statement->bindParam(1, $id);
+            $statement->execute();
+            return $statement->fetchAll();
+        } catch (PDOException $e) {
+            throw new DatabaseException($e);
+        } finally {
+			$statement = null;
 		}
-
-
     }
 
     /**
@@ -103,6 +104,10 @@ abstract class Model extends Connector
      */
     public static function update($id, $values = array())
     {
+        $table = self::$tableName;
+
+        $connection = static::createConnection();
+        $statement = $connection->prepare("");
     }
 
     /**
@@ -112,6 +117,16 @@ abstract class Model extends Connector
      */
     public static function destroy($id)
     {
+        $table = self::$tableName;
+
+        try {
+            $connection = static::createConnection();
+            $statement = $connection->prepare("DELETE FROM {$table} WHERE ID = ?");
+            $statement->bindParam(1, $id);
+            $statement->execute();
+        } catch (PDOException $e) {
+            throw new DatabaseException($e);
+        }
     }
 
 
