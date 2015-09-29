@@ -24,7 +24,7 @@
   "autoload": {
     "psr-4": {
       "Verem\\persistence\\": "src/",
-      "Verem\\Persistence\\Base": "src/Base"
+      "Verem\\Persistence\\Base\\": "src/Base"
     }
   },
 

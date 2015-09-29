@@ -8,15 +8,19 @@
 
 namespace Verem\persistence\Base;
 
-abstract class Model
+use Verem\persistence\Connector;
+use PDOException;
+
+abstract class Model extends Connector
 {
     private static $className;
-
+    private static $tableName;
     public function __construct()
     {
         $reflection = new \ReflectionClass($this);
         $class = $reflection->getName();
         self::$className = substr(strrchr($class, '\\'), 1);
+        self::$tableName = static::getTable();
     }
 
     /**
@@ -36,28 +40,42 @@ abstract class Model
      */
     public static function all()
     {
+        $table = self::$tableName;
+        try {
+            $statement = static::createConnection();
+            return $statement->query("SELECT * FROM {$table}")->fetchAll();
+        } catch (PDOException $e) {
+            die($e->getMessage());
+        } finally {
+            $statement = null;
+        }
     }
 
     /**
      * @param array $values
-     *
-     * create a record in the given table
+     * @return array
      */
     public function create($values = array())
     {
-
-        $table = $this->getTable(self::getClass());
     }
 
-    /**
-     *
-     * @param $id
-     * find and return a record from db
-     *
-     * @return mixed
-     */
+
+	/**
+	 * @param $id
+	 * @return array
+	 *
+	 * Fetches a model, from the database that
+	 * matches the specified $id.
+	 */
+
     public static function find($id)
     {
+        $table= self::$tableName;
+        $connection = static::createConnection();
+        $statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
+		$statement->bindParam(1, $id);
+		$statement->execute();
+		return $statement->fetchAll();
     }
 
     /**

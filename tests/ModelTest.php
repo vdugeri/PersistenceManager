@@ -9,6 +9,7 @@
 namespace Verem\persistence\Test;
 
 use Verem\persistence\UserRole;
+use Verem\persistence\Comment;
 
 class ModelTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,10 +17,18 @@ class ModelTest extends \PHPUnit_Framework_TestCase
      *
      *Perform test for models map to database tables
      */
-    public function testModelMapsToTable()
+    public function testUserRoleModelMapsToTable()
     {
         $userRole = new UserRole();
-        $this->assertEquals('user_roles', $userRole->getTable());
+
+        $this->assertEquals('user_roles', $userRole::getTable());
+
     }
+
+	public function testCommentModelMapsToTable()
+	{
+		$comment = new Comment();
+		$this->assertEquals('comments', $comment::getTable());
+	}
 
 }
