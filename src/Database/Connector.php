@@ -11,6 +11,7 @@ namespace Verem\persistence;
 use Dotenv\Dotenv;
 use PDOException;
 use PDO;
+use Verem\EnvReader;
 
 abstract class Connector
 {
@@ -18,45 +19,42 @@ abstract class Connector
 	 * @var $dsn
 	 * The datasource name for the connection
 	 */
-    private $dsn;
+    private static $dsn;
 
 	/**
 	 * @var $user
 	 * The username for the connection.
 	 */
-	private $username;
+	private static $username;
 
 	/**
 	 * @var $password
 	 * The database password for the connection.
 	 */
-	private $password;
+	private static $password;
 
 
-	private $dotEnv;
+	private static $dotEnv;
 
 	/**
-	 * @param $dsn
-	 * @param $user
-	 * @param $pass
-	 *
+	 * constructor to create a class instance
 	 */
 	public function __construct()
 	{
+		self::$dotEnv = new EnvReader();
+		self::$dotEnv->loadEnv();
 
-		$this->dotEnv = new Dotenv(__DIR__.'/../');
-		$this->dotEnv->load();
-
-		$this->password = getenv('DB_PASSWORD');
-		$this->username = getenv('DB_USERNAME');
-		$this->dsn 		= getenv('CONNECTION').":host=".getenv('DB_HOST').";dbname=".getenv('DATABASE_NAME');
+		self::$password = getenv('DB_PASSWORD');
+		self::$username = getenv('DB_USERNAME');
+		self::$dsn 		= getenv('DB_CONNECTION').":host=".getenv('DB_HOST').";dbname=".getenv('DATABASE_NAME');
 	}
 
 
-	public function createConnection()
+	public static function createConnection()
 	{
 		try{
-			return new PDO($this->dsn, $this->username, $this->password);
+			return new PDO(self::$dsn, self::$username, self::$password);
+
 		} catch (PDOException $e) {
 			return $e->getMessage();
 		}
