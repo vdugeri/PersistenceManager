@@ -52,7 +52,7 @@ abstract class Model extends Connector
 
         try {
             $connection = static::createConnection();
-            return $connection->query("SELECT * FROM {$table}")->fetchAll(PDO::FETCH_ASSOC);
+            return $connection->query("SELECT * FROM {$table}")->fetchAll(PDO::FETCH_CLASS);
         } catch (PDOException $e) {
             throw new DatabaseException($e);
         } finally {
@@ -67,16 +67,27 @@ abstract class Model extends Connector
     {
         $properties = $this->getProperties();
         $table   =  self::$tableName;
-        $keys = array_keys($properties);
-		$values = array_values($properties);
+        $columns = implode(',',array_keys($properties));
+		$values = implode(',',array_values($properties));
+
         try {
             $connection =  static::createConnection();
-            $statement    =  $connection->prepare("INSERT INTO {$table} ({$keys}) VALUES($values)");
         } catch (PDOException $e) {
             throw new DatabaseException($e);
-        } finally {
-            $statement = null;
         }
+
+		try{
+			$statement    =  $connection->query("INSERT INTO {$table} ({$columns}) VALUES({$values})");
+
+			if($statement) {
+				$statement->execute();
+			}
+		} catch(PDOException $e) {
+			throw new DatabaseException($e);
+		} finally {
+			$statement = null;
+			$connection = null;
+		}
     }
 
 
@@ -106,7 +117,7 @@ abstract class Model extends Connector
             if ($statement) {
                 $statement->bindParam(1, $id);
                 $statement->execute();
-                $result   =  $statement->fetchAll();
+                $result   =  $statement->fetchAll(PDO::FETCH_CLASS);
             }
         } catch (PDOException $e) {
             throw new DatabaseException($e);
@@ -144,7 +155,7 @@ abstract class Model extends Connector
             if ($statement) {
                 $statement->bindParam(1, $value);
                 $statement->execute();
-                $result = $statement->fetchAll();
+                $result = $statement->fetchAll(PDO::FETCH_CLASS);
             }
         } catch (PDOException $e) {
             throw new DatabaseException($e);
@@ -162,9 +173,11 @@ abstract class Model extends Connector
 	 *
      * Update a row in the db with a matching id
      */
-    public static function update($id, $values = array())
+    public static function update()
     {
         $table = self::$tableName;
+		$columns = implode(",", array_keys(self::$properties));
+		$values = implode(",", array_values(self::$properties));
         $rowCount = 0;
 
         try {
@@ -173,9 +186,10 @@ abstract class Model extends Connector
             throw new DatabaseException($e);
         }
         try {
-            $statement = $connection->prepare("");
+            $statement = $connection->prepare("INSERT INTO {$table} ({$columns}) VALUES({$values})");
             if ($statement) {
-                //TODO: write code to update record in db
+                $statement->execute();
+				$rowCount = $statement->rowCount();
             }
         } catch (PDOException $e) {
             throw new DatabaseException($e);
