@@ -69,6 +69,7 @@ abstract class Model extends Connector
         $table   =  self::$tableName;
         $columns = implode(',',array_keys($properties));
 		$values = implode(',',array_values($properties));
+		$result = 0;
 
         try {
             $connection =  static::createConnection();
@@ -77,10 +78,10 @@ abstract class Model extends Connector
         }
 
 		try{
-			$statement    =  $connection->query("INSERT INTO {$table} ({$columns}) VALUES({$values})");
+			$rowCount    =  $connection->exec("INSERT INTO {$table} ({$columns}) VALUES({$values})");
 
-			if($statement) {
-				$statement->execute();
+			if($rowCount > 0) {
+				$result = $rowCount;
 			}
 		} catch(PDOException $e) {
 			throw new DatabaseException($e);
@@ -88,6 +89,7 @@ abstract class Model extends Connector
 			$statement = null;
 			$connection = null;
 		}
+		return $result;
     }
 
 
