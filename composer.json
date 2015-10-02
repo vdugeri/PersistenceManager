@@ -22,6 +22,10 @@
   },
 
   "autoload": {
+    "classmap":[
+      "src/"
+    ],
+    
     "psr-4": {
       "Verem\\persistence\\": "src/",
       "Verem\\Persistence\\Base\\": "src/Base"
