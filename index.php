@@ -12,7 +12,16 @@ use Verem\User;
 
 $user = new User();
 $user->username = "Verem";
-$user->password = "1234567";
+$user->password = "098765";
+
+$user::find(2);
+$user->username = "Dan";
+$user->password = "newuser";
 $user->save();
-$user->destroy(1);
+
+
+
+
+
+
 

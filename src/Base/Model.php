@@ -16,10 +16,11 @@ use Verem\Persistence\Exceptions\DatabaseException;
 
 abstract class Model extends Connector
 {
-    private static $className;
+
+	protected  $primaryKey = 'id';
+	private static $className;
     protected static $tableName;
-    protected static $properties = [];
-    protected static $primaryKey = 'id';
+    protected  $properties = [];
 
 
     public function __construct()
@@ -49,15 +50,17 @@ abstract class Model extends Connector
     public static function all()
     {
         $table = self::$tableName;
-
+		$result = null;
         try {
             $connection = static::createConnection();
-            return $connection->query("SELECT * FROM {$table}")->fetchAll(PDO::FETCH_CLASS);
+            $result = $connection->query("SELECT * FROM {$table}")->fetchAll(PDO::FETCH_CLASS);
         } catch (PDOException $e) {
             throw new DatabaseException($e);
         } finally {
             $connection = null;
         }
+
+		return $result;
     }
 
     /**
@@ -65,6 +68,7 @@ abstract class Model extends Connector
      */
     public function save()
     {
+
 		if($this->exists()){
 			$this->performUpdate();
 		} else {
@@ -155,10 +159,6 @@ abstract class Model extends Connector
      */
     public function performUpdate()
     {
-        $table = self::$tableName;
-        $columns = implode(",", array_keys(self::$properties));
-        $values = implode(",", array_values(self::$properties));
-        $result = 0;
 
         try {
             $connection = static::createConnection();
@@ -166,10 +166,31 @@ abstract class Model extends Connector
             return $e->getMessage();
         }
         try {
-            $rowCount = $connection->exec("INSERT INTO {$table} ({$columns}) VALUES({$values})");
-            if ($rowCount > 0) {
-                $result = $rowCount;
-            }
+			$count = 0;
+			$sql = "UPDATE ".self::$tableName." SET ";
+			$insertColumns = "";
+			$insertValues = [];
+			foreach($this->getProperties() as $key => $value) {
+				$count++;
+				if($key ===$this->primaryKey) {
+					$insertValues[":".$key] = $value;
+					continue;
+				}
+				if(isset($value)){
+					$insertColumns .=  $key . " = :".$key;
+					$insertValues[":".$key] = $value;
+				}
+				if($count < count($this->getProperties())) {
+					if(isset($value)){$insertColumns .= ", ";}
+				}
+			}
+			$sql .= $insertColumns . " WHERE " . $this->primaryKey. " = :". $this->primaryKey;
+
+
+			echo $sql;
+			$statement = $connection->prepare($sql);
+			$result = $statement->execute($insertValues);
+
         } catch (PDOException $e) {
            return $e->getMessage();
         }
@@ -235,7 +256,7 @@ abstract class Model extends Connector
      */
     public function __set($property, $value)
     {
-        self::$properties[$property] = $value;
+        $this->properties[$property] = $value;
     }
 
     /**
@@ -247,12 +268,12 @@ abstract class Model extends Connector
      */
     public function __get($property)
     {
-        return self::$properties[$property];
+        return $this->properties[$property];
     }
 
     private function getProperties()
     {
-        return static::$properties;
+        return $this->properties;
     }
 
     public function performInsert()
@@ -269,30 +290,36 @@ abstract class Model extends Connector
             $sql = "INSERT INTO $table ( ";
             $insertColumns = "";
             $insertValues = "";
-            $count = 0;
+            $keys = array_keys($this->properties);
+			$values = array_values($this->properties);
+			array_push($values, 'dara');
 
-            foreach ($this->getProperties() as $key => $value) {
-				$count++;
-				if($key === self::$primaryKey) {
-					continue;
-				}
-                $insertColumns .= $key;
-                $insertValues  .= ':'.$key;
+			$columns = implode(', ', $keys);
+			var_dump($columns);
+			$values = implode(':,', $values);
+			var_dump($values);
 
-                if ($count < count($this->getProperties())) {
-                    $insertColumns  .= ", ";
-                    $insertValues   .= ", ";
-                }
-            }
 
-            $sql .= $insertColumns .") VALUES (".$insertValues .")";
+//            foreach ($this->properties as $key => $value) {
+//				$count++;
+//				if($key === $this->primaryKey) {
+//					continue;
+//				}
+//                $insertColumns .= $key;
+//                $insertValues  .= ':'.$key;
+//
+//                if ($count < count($this->properties)) {
+//                    $insertColumns  .= ", ";
+//                    $insertValues   .= ", ";
+//                }
+//            }
 
+            $sql .= $insertColumns .") VALUES (".$insertValues .");";
 
             $statement = $connection->prepare($sql);
             foreach ($this->getProperties() as $key => $value) {
                 $statement->bindParam(":".$key, $value);
             }
-
             $result = $statement->execute();
 
         } catch (PDOException $e) {
@@ -303,8 +330,8 @@ abstract class Model extends Connector
 
     public function exists()
     {
-        if (isset($this->properties) && isset($this->properties['primaryKey'])
-                && is_numeric($this->properties['primaryKey'])) {
+        if (isset($this->properties) && isset($this->id)
+                && is_numeric($this->id)) {
             return true;
         } else {
             return false;
