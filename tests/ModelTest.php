@@ -10,6 +10,7 @@ namespace Verem\persistence\Test;
 
 use Verem\persistence\Comment;
 use Verem\Persistence\Exceptions\DatabaseException;
+use Verem\User;
 
 class ModelTest extends \PHPUnit_Framework_TestCase {
 
@@ -19,22 +20,37 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testModelCanBeCreated()
 	{
-		$comment = new Comment();
-		$comment->user = "verem";
-		$comment->body = "this is a test comment";
-		$comment->created_at = time();
-		$comment->updated_at = time();
+		$user = new User();
+		$user->username = "verem";
+		$user->password = "password";
+		$inserted =$user->save();
 
-		$comment->save();
+		$this->assertTrue($inserted);
 	}
 
 	public function testModelCanBeFound()
 	{
+		$user = new User();
+		$user->username = "verem";
+		$user->password = "password";
+		$user->save();
 
+		$user::find(1);
+		$this->assertNotEmpty($user);
+		$this->assertEquals('password', $user->password);
 	}
 
 	public function testModelCanBeDeleted()
 	{
+		$user = new User();
+		$user->username = "verem";
+		$user->password = "password";
+		$user->save();
+
+		$user::destroy(1);
+		$users = User::all();
+		var_dump($users);
+		$this->assertNotContains('verem', $users);
 
 	}
 

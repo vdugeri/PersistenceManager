@@ -16,11 +16,10 @@ use Verem\Persistence\Exceptions\DatabaseException;
 
 abstract class Model extends Connector
 {
-
-	protected  $primaryKey = 'id';
-	private static $className;
+    protected $primaryKey = 'id';
+    private static $className;
     protected static $tableName;
-    protected  $properties = [];
+    protected $properties = [];
 
 
     public function __construct()
@@ -50,7 +49,7 @@ abstract class Model extends Connector
     public static function all()
     {
         $table = self::$tableName;
-		$result = null;
+        $result = null;
         try {
             $connection = static::createConnection();
             $result = $connection->query("SELECT * FROM {$table}")->fetchAll(PDO::FETCH_CLASS);
@@ -60,7 +59,7 @@ abstract class Model extends Connector
             $connection = null;
         }
 
-		return $result;
+        return $result;
     }
 
     /**
@@ -68,12 +67,13 @@ abstract class Model extends Connector
      */
     public function save()
     {
-
-		if($this->exists()){
-			$this->performUpdate();
-		} else {
-			$this->performInsert();
-		}
+        $id = '';
+        if ($this->exists()) {
+            $this->performUpdate();
+        } else {
+            $id =  $this->performInsert();
+        }
+        return $id;
     }
 
 
@@ -159,40 +159,40 @@ abstract class Model extends Connector
      */
     public function performUpdate()
     {
-
         try {
             $connection = static::createConnection();
         } catch (PDOException $e) {
             return $e->getMessage();
         }
         try {
-			$count = 0;
-			$sql = "UPDATE ".self::$tableName." SET ";
-			$insertColumns = "";
-			$insertValues = [];
-			foreach($this->getProperties() as $key => $value) {
-				$count++;
-				if($key ===$this->primaryKey) {
-					$insertValues[":".$key] = $value;
-					continue;
-				}
-				if(isset($value)){
-					$insertColumns .=  $key . " = :".$key;
-					$insertValues[":".$key] = $value;
-				}
-				if($count < count($this->getProperties())) {
-					if(isset($value)){$insertColumns .= ", ";}
-				}
-			}
-			$sql .= $insertColumns . " WHERE " . $this->primaryKey. " = :". $this->primaryKey;
+            $count = 0;
+            $sql = "UPDATE ".self::$tableName." SET ";
+            $insertColumns = "";
+            $insertValues = [];
+            foreach ($this->getProperties() as $key => $value) {
+                $count++;
+                if ($key ===$this->primaryKey) {
+                    $insertValues[":".$key] = $value;
+                    continue;
+                }
+                if (isset($value)) {
+                    $insertColumns .=  $key . " = :".$key;
+                    $insertValues[":".$key] = $value;
+                }
+                if ($count < count($this->getProperties())) {
+                    if (isset($value)) {
+                        $insertColumns .= ", ";
+                    }
+                }
+            }
+            $sql .= $insertColumns . " WHERE " . $this->primaryKey. " = :". $this->primaryKey;
 
 
-			echo $sql;
-			$statement = $connection->prepare($sql);
-			$result = $statement->execute($insertValues);
-
+            echo $sql;
+            $statement = $connection->prepare($sql);
+            $result = $statement->execute($insertValues);
         } catch (PDOException $e) {
-           return $e->getMessage();
+            return $e->getMessage();
         }
         return $result;
     }
@@ -287,41 +287,18 @@ abstract class Model extends Connector
         }
 
         try {
-            $sql = "INSERT INTO $table ( ";
-            $insertColumns = "";
-            $insertValues = "";
             $keys = array_keys($this->properties);
-			$values = array_values($this->properties);
-			array_push($values, 'dara');
+            $insertColumns = implode(', ', $keys);
+            $placeholders = ':'.implode(', :', $keys);
 
-			$columns = implode(', ', $keys);
-			var_dump($columns);
-			$values = implode(':,', $values);
-			var_dump($values);
-
-
-//            foreach ($this->properties as $key => $value) {
-//				$count++;
-//				if($key === $this->primaryKey) {
-//					continue;
-//				}
-//                $insertColumns .= $key;
-//                $insertValues  .= ':'.$key;
-//
-//                if ($count < count($this->properties)) {
-//                    $insertColumns  .= ", ";
-//                    $insertValues   .= ", ";
-//                }
-//            }
-
-            $sql .= $insertColumns .") VALUES (".$insertValues .");";
+            $sql = "INSERT INTO $table ($insertColumns) VALUES ($placeholders)";
 
             $statement = $connection->prepare($sql);
-            foreach ($this->getProperties() as $key => $value) {
+
+            foreach ($this->properties as $key => $value) {
                 $statement->bindParam(":".$key, $value);
             }
             $result = $statement->execute();
-
         } catch (PDOException $e) {
             return $e->getMessage();
         }
