@@ -10,12 +10,9 @@ require_once('vendor/autoload.php');
 
 use Verem\User;
 
-$user = new User();
-$user->username = "Dan";
-$user->password = "password";
-$user->email	= "danverem@verem.com";
+$person = User::find(5);
 
-$user->save();
+print_r($person);
 
 
 

@@ -97,7 +97,7 @@ abstract class Model extends Connector
             if ($statement) {
                 $statement->bindParam(1, $id);
                 $statement->execute();
-                $result   =  $statement->fetchAll(PDO::FETCH_CLASS);
+                $result   =  $statement->fetchAll(PDO::FETCH_CLASS, get_called_class());
             }
         } catch (PDOException $e) {
             throw new DatabaseException($e);
@@ -160,29 +160,27 @@ abstract class Model extends Connector
         }
         try {
             $count = 0;
-            $sql = "UPDATE ".self::$tableName." SET ";
-            $insertColumns = "";
-            $insertValues = [];
-            foreach ($this->getProperties() as $key => $value) {
-                $count++;
-                if ($key ===$this->primaryKey) {
-                    $insertValues[":".$key] = $value;
-                    continue;
-                }
-                if (isset($value)) {
-                    $insertColumns .=  $key . " = :".$key;
-                    $insertValues[":".$key] = $value;
-                }
-                if ($count < count($this->getProperties())) {
-                    if (isset($value)) {
-                        $insertColumns .= ", ";
-                    }
-                }
-            }
-            $sql .= $insertColumns . " WHERE " . $this->primaryKey. " = :". $this->primaryKey;
+			$table = static::getTable();
+            $sql = "UPDATE ".$table." SET ";
+
+			foreach($this->properties as $key => $value) {
+				$count++;
+				$sql .= "$key = ?";
+				if($count < count($this->properties)) {
+					$sql .= ", ";
+				}
+			}
+
+			$sql .= "WHERE " .$this->primaryKey === $this->primaryKey;
 
             $statement = $connection->prepare($sql);
-            $result = $statement->execute($insertValues);
+			$indexCount = 0;
+            foreach($this->properties as $key => $value) {
+				$indexCount++;
+				$statement->bindValue($indexCount, $value);
+			}
+
+			$result = $statement->execute();
         } catch (PDOException $e) {
             return $e->getMessage();
         }
@@ -233,7 +231,7 @@ abstract class Model extends Connector
      */
     public function getTable()
     {
-        $splitter = new Splitter($this->getClassName());
+        $splitter = new Splitter(static::getClassName());
 
         $splittedString = $splitter->format();
 
