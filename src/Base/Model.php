@@ -17,19 +17,8 @@ use Verem\Persistence\Exceptions\DatabaseException;
 abstract class Model extends Connector
 {
     protected $primaryKey = 'id';
-    private static $className;
     protected static $tableName;
     protected $properties = [];
-
-
-    public function __construct()
-    {
-        $reflection        =    new ReflectionClass($this);
-        $class             =    $reflection->getName();
-        self::$className   =    substr(strrchr($class, '\\'), 1);
-        self::$tableName   =    static::getTable();
-        parent::__construct();
-    }
 
     /**
      * @return string
@@ -37,10 +26,15 @@ abstract class Model extends Connector
      * get the name of the class. This will determine
      * the name of the table
      */
-    protected static function getClass()
+    protected function getClassName()
     {
-        return self::$className;
+        return substr(strrchr(static::getClass(), '\\'), 1);
     }
+
+	protected function getClass()
+	{
+		return get_called_class();
+	}
 
 
     /**
@@ -48,17 +42,16 @@ abstract class Model extends Connector
      */
     public static function all()
     {
-        $table = self::$tableName;
+        $table = static::getTable();
         $result = null;
         try {
             $connection = static::createConnection();
-            $result = $connection->query("SELECT * FROM {$table}")->fetchAll(PDO::FETCH_CLASS);
+            $result = $connection->query("SELECT * FROM {$table}")->fetchAll(PDO::FETCH_CLASS, get_called_class());
         } catch (PDOException $e) {
             throw new DatabaseException($e);
         } finally {
             $connection = null;
         }
-
         return $result;
     }
 
@@ -76,7 +69,6 @@ abstract class Model extends Connector
         return $id;
     }
 
-
     /**
      * @param $id
      * @return array
@@ -87,19 +79,21 @@ abstract class Model extends Connector
 
     public static function find($id)
     {
-        $table= self::$tableName;
+        $table= static::getTable();
         $result = null;
         $connection = null;
 
+		//Try to get a connection to db. Throw error if connection is
+		//not successful
         try {
             $connection = static::createConnection();
         } catch (PDOException $e) {
-            throw new DatabaseException($e);
+            return $e->getMessage();
         }
 
+		//try to create a statement. Throw exception if error exists.
         try {
             $statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
-
             if ($statement) {
                 $statement->bindParam(1, $id);
                 $statement->execute();
@@ -124,7 +118,7 @@ abstract class Model extends Connector
      */
     public static function where($column, $value)
     {
-        $table = self::$tableName;
+        $table = static::getTable();
         $statement  = null;
         $connection = null;
         $result     = null;
@@ -187,8 +181,6 @@ abstract class Model extends Connector
             }
             $sql .= $insertColumns . " WHERE " . $this->primaryKey. " = :". $this->primaryKey;
 
-
-            echo $sql;
             $statement = $connection->prepare($sql);
             $result = $statement->execute($insertValues);
         } catch (PDOException $e) {
@@ -239,12 +231,13 @@ abstract class Model extends Connector
      *
      * @return mixed
      */
-    public static function getTable()
+    public function getTable()
     {
-        $splitter = new Splitter(self::getClass());
+        $splitter = new Splitter($this->getClassName());
 
         $splittedString = $splitter->format();
-        return  Inflect::pluralize($splittedString);
+
+     	return Inflect::pluralize($splittedString);
     }
 
     /**
@@ -271,14 +264,20 @@ abstract class Model extends Connector
         return $this->properties[$property];
     }
 
+	/**
+	 * @return array
+	 */
     private function getProperties()
     {
         return $this->properties;
     }
 
+	/**
+	 * @return bool|null|string
+	 */
     public function performInsert()
     {
-        $table   =  self::$tableName;
+        $table   =  $this->getTable();
         $result = null;
         try {
             $connection =  static::createConnection();
@@ -289,22 +288,35 @@ abstract class Model extends Connector
         try {
             $keys = array_keys($this->properties);
             $insertColumns = implode(', ', $keys);
-            $placeholders = ':'.implode(', :', $keys);
+			$placeholders = [];
+            foreach ($keys as $key){
+				$placeholders[$key] = '?';
+			}
+
+			$placeholders = implode(', ', $placeholders);
 
             $sql = "INSERT INTO $table ($insertColumns) VALUES ($placeholders)";
-
             $statement = $connection->prepare($sql);
 
+			$count = 0;
             foreach ($this->properties as $key => $value) {
-                $statement->bindParam(":".$key, $value);
+				++$count;
+                $statement->bindValue($count, $value);
             }
-            $result = $statement->execute();
+
+			$result = $statement->execute();
+
+
         } catch (PDOException $e) {
             return $e->getMessage();
         }
+
         return $result;
     }
 
+	/**
+	 * @return bool
+	 */
     public function exists()
     {
         if (isset($this->properties) && isset($this->id)

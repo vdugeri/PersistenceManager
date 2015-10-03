@@ -11,8 +11,10 @@ require_once('vendor/autoload.php');
 use Verem\User;
 
 $user = new User();
-$user->username = "Verem";
-$user->password = "098765";
+$user->username = "Dan";
+$user->password = "password";
+$user->email	= "danverem@verem.com";
+
 $user->save();
 
 

@@ -17,7 +17,7 @@ abstract class Connector
 {
 	/**
 	 * @var $dsn
-	 * The datasource name for the connection
+	 * The data-source name for the connection
 	 */
     private static $dsn;
 
@@ -33,13 +33,23 @@ abstract class Connector
 	 */
 	private static $password;
 
+	private static $options;
+
 
 	private static $dotEnv;
 
-	/**
-	 * constructor to create a class instance
-	 */
-	public function __construct()
+	public static function createConnection()
+	{
+		static::initConfig();
+		try{
+			return new PDO(self::$dsn, self::$username, self::$password,self::$options );
+
+		} catch (PDOException $e) {
+			return $e->getMessage();
+		}
+	}
+
+	public function initConfig()
 	{
 		self::$dotEnv = new EnvReader();
 		self::$dotEnv->loadEnv();
@@ -47,17 +57,11 @@ abstract class Connector
 		self::$password = getenv('DB_PASSWORD');
 		self::$username = getenv('DB_USERNAME');
 		self::$dsn 		= getenv('DB_CONNECTION').":host=".getenv('DB_HOST').";dbname=".getenv('DATABASE_NAME');
-	}
 
-
-	public static function createConnection()
-	{
-		try{
-			return new PDO(self::$dsn, self::$username, self::$password);
-
-		} catch (PDOException $e) {
-			return $e->getMessage();
-		}
+		self::$options = [
+		  PDO::ATTR_PERSISTENT => true,
+		  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+		];
 	}
 
 }
