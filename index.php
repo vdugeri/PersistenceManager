@@ -9,10 +9,10 @@
 require_once('vendor/autoload.php');
 
 use Verem\User;
+print_r(User::all());
 
-$person = User::find(5);
 
-print_r($person);
+
 
 
 

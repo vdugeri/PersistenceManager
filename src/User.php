@@ -14,5 +14,5 @@ use Verem\persistence\Base\Model;
 class User extends  Model {
 
 
-	protected $primaryKey = 'id';
+	protected static $primaryKey = 'id';
 }

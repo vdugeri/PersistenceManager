@@ -10,15 +10,15 @@ namespace Verem\persistence\Base;
 
 use PDO;
 use PDOException;
-use ReflectionClass;
 use Verem\persistence\Connector;
 use Verem\Persistence\Exceptions\DatabaseException;
 
 abstract class Model extends Connector
 {
-    protected $primaryKey = 'id';
+    protected static $primaryKey = 'id';
     protected static $tableName;
     protected $properties = [];
+    private static $resultSet = false;
 
     /**
      * @return string
@@ -31,10 +31,10 @@ abstract class Model extends Connector
         return substr(strrchr(static::getClass(), '\\'), 1);
     }
 
-	protected function getClass()
-	{
-		return get_called_class();
-	}
+    protected function getClass()
+    {
+        return get_called_class();
+    }
 
 
     /**
@@ -60,9 +60,9 @@ abstract class Model extends Connector
      */
     public function save()
     {
-        $id = '';
+		$id = '';
         if ($this->exists()) {
-            $this->performUpdate();
+            $this->merge();
         } else {
             $id =  $this->performInsert();
         }
@@ -83,21 +83,25 @@ abstract class Model extends Connector
         $result = null;
         $connection = null;
 
-		//Try to get a connection to db. Throw error if connection is
-		//not successful
+        //Try to get a connection to db. Throw error if connection is
+        //not successful
         try {
             $connection = static::createConnection();
         } catch (PDOException $e) {
             return $e->getMessage();
         }
 
-		//try to create a statement. Throw exception if error exists.
+        //try to create a statement. Throw exception if error exists.
         try {
             $statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
             if ($statement) {
                 $statement->bindParam(1, $id);
                 $statement->execute();
+
                 $result   =  $statement->fetchAll(PDO::FETCH_CLASS, get_called_class());
+                if ($result != null || $result != false || !empty($result)) {
+                    self::$resultSet = true;
+                }
             }
         } catch (PDOException $e) {
             throw new DatabaseException($e);
@@ -105,6 +109,7 @@ abstract class Model extends Connector
             $statement   = null;
             $connection  = null;
         }
+        self::$primaryKey = $id;
         return $result;
     }
 
@@ -151,7 +156,7 @@ abstract class Model extends Connector
      *
      * @return int
      */
-    public function performUpdate()
+    public function merge()
     {
         try {
             $connection = static::createConnection();
@@ -160,27 +165,30 @@ abstract class Model extends Connector
         }
         try {
             $count = 0;
-			$table = static::getTable();
+            $table = static::getTable();
             $sql = "UPDATE ".$table." SET ";
 
-			foreach($this->properties as $key => $value) {
-				$count++;
-				$sql .= "$key = ?";
-				if($count < count($this->properties)) {
-					$sql .= ", ";
-				}
-			}
+            foreach ($this->properties as $key => $value) {
+                $count++;
+                $sql .= "$key = ?";
+                if ($count < count($this->properties)) {
+                    $sql .= ", ";
+                }
+            }
 
-			$sql .= "WHERE " .$this->primaryKey === $this->primaryKey;
+            $sql .= "WHERE " .self::$primaryKey ." = ?";
 
             $statement = $connection->prepare($sql);
-			$indexCount = 0;
-            foreach($this->properties as $key => $value) {
-				$indexCount++;
-				$statement->bindValue($indexCount, $value);
-			}
 
-			$result = $statement->execute();
+            $indexCount = 0;
+            foreach ($this->properties as $key => $value) {
+                $indexCount++;
+                $statement->bindValue($indexCount, $value);
+            }
+
+            $statement->bindValue(++$indexCount, self::$primaryKey);
+
+            $result = $statement->execute();
         } catch (PDOException $e) {
             return $e->getMessage();
         }
@@ -231,11 +239,16 @@ abstract class Model extends Connector
      */
     public function getTable()
     {
-        $splitter = new Splitter(static::getClassName());
+		if(! isset(self::$tableName)) {
+			$splitter = new Splitter(static::getClassName());
 
-        $splittedString = $splitter->format();
+			$splittedString = $splitter->format();
 
-     	return Inflect::pluralize($splittedString);
+			return Inflect::pluralize($splittedString);
+		}
+
+		return self::$tableName;
+
     }
 
     /**
@@ -262,17 +275,9 @@ abstract class Model extends Connector
         return $this->properties[$property];
     }
 
-	/**
-	 * @return array
-	 */
-    private function getProperties()
-    {
-        return $this->properties;
-    }
-
-	/**
-	 * @return bool|null|string
-	 */
+    /**
+     * @return bool|null|string
+     */
     public function performInsert()
     {
         $table   =  $this->getTable();
@@ -286,25 +291,23 @@ abstract class Model extends Connector
         try {
             $keys = array_keys($this->properties);
             $insertColumns = implode(', ', $keys);
-			$placeholders = [];
-            foreach ($keys as $key){
-				$placeholders[$key] = '?';
-			}
+            $placeholders = [];
+            foreach ($keys as $key) {
+                $placeholders[$key] = '?';
+            }
 
-			$placeholders = implode(', ', $placeholders);
+            $placeholders = implode(', ', $placeholders);
 
             $sql = "INSERT INTO $table ($insertColumns) VALUES ($placeholders)";
             $statement = $connection->prepare($sql);
 
-			$count = 0;
+            $count = 0;
             foreach ($this->properties as $key => $value) {
-				++$count;
+                ++$count;
                 $statement->bindValue($count, $value);
             }
 
-			$result = $statement->execute();
-
-
+            $result = $statement->execute();
         } catch (PDOException $e) {
             return $e->getMessage();
         }
@@ -312,13 +315,12 @@ abstract class Model extends Connector
         return $result;
     }
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @return bool
+     */
     public function exists()
     {
-        if (isset($this->properties) && isset($this->id)
-                && is_numeric($this->id)) {
+        if (self::$resultSet) {
             return true;
         } else {
             return false;
