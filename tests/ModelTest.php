@@ -23,48 +23,24 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	public function testModelCanBeCreated()
 	{
 
-/*		$mock = Mockery::mock('Verem\User');
-		$mock->shouldReceive('p')
-			->once()
-		->andReturn(1);
-*/
-		$user = new User();
-		$user->username = "verem";
-		$user->password = "password";
-		$inserted =$user->save();
-
-		$this->assertTrue($inserted);
 	}
 
 
 	public function testModelCanBeFound()
 	{
-		$user = new User();
-		$user->username = "verem";
-		$user->password = "password";
-		$user->save();
 
-		$user::find(1);
-		$this->assertNotEmpty($user);
-		$this->assertEquals('password', $user->password);
+
 	}
 
 	public function testModelCanBeDeleted()
 	{
-		$user = new User();
-		$user->username = "verem";
-		$user->password = "password";
-		$user->save();
 
-		$result = $user::destroy(1);
-
-		$this->assertTrue($result);
 
 
 	}
 
 	public function testModelCanBeFoundWithColumn()
 	{
-
+		
 	}
 }

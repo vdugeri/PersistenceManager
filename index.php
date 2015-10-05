@@ -10,14 +10,13 @@ require_once('vendor/autoload.php');
 
 use Verem\User;
 
+$user = new User();
+$user->username = "Ter";
+$user->password = "pass";
+$user->email = "ter@terry.dom";
+$user->save();
 
-try{
-
-	$result = User::destroy(8);
-	die((bool)$result);
-}catch(\Verem\Persistence\Exceptions\DatabaseException $e) {
-	echo $e->getErrorMessage();
-}
+User::destroy(37);
 
 
 

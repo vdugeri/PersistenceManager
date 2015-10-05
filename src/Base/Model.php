@@ -99,20 +99,16 @@ abstract class Model extends Connector
                 $statement->bindParam(1, $id);
                 $statement->execute();
 
-                $result   =  $statement->fetchAll(PDO::FETCH_CLASS, get_called_class());
-                if ($result != null || $result != false || !empty($result)) {
-                    self::$resultSet = true;
-                }
+                $result   =  $statement->fetch(PDO::FETCH_ASSOC);
             }
         } catch (PDOException $e) {
-            throw new DatabaseException($e);
+            return $e->getMessage();
         } finally {
             $statement   = null;
             $connection  = null;
         }
-       // self::$primaryKey = $id;
-		$class->id = $id;
-		//$class->properties = $result;
+
+		$class->id = $result['id'];
         return $class;
     }
 
@@ -215,7 +211,7 @@ abstract class Model extends Connector
     public static function destroy($id)
     {
         $table = static::getTable();
-        $result = false;
+		$rowCount = 0;
 
         try {
             $connection = static::createConnection();
@@ -228,15 +224,17 @@ abstract class Model extends Connector
             $statement = $connection->prepare($sql);
             if ($statement) {
                 $statement->bindParam(1, $id);
-                $result = $statement->execute();
+                $statement->execute();
+				$rowCount = $statement->rowCount();
             }
         } catch (PDOException $e) {
            throw new DatabaseException($e);
         } finally {
-            $statement    = null;
-            $connection = null;
+            $statement    =  null;
+            $connection   =  null;
         }
-        return $result;
+
+        return ($rowCount > 0)? true: false;
     }
 
 
@@ -331,7 +329,7 @@ abstract class Model extends Connector
      */
     public function exists()
     {
-        if ($this->id) {
+        if (isset($this->id)) {
             return true;
         } else {
             return false;
