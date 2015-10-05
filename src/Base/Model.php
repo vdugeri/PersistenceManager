@@ -82,6 +82,7 @@ abstract class Model extends Connector
         $table= static::getTable();
         $result = null;
         $connection = null;
+		$class = new static;
 
         //Try to get a connection to db. Throw error if connection is
         //not successful
@@ -109,8 +110,10 @@ abstract class Model extends Connector
             $statement   = null;
             $connection  = null;
         }
-        self::$primaryKey = $id;
-        return $result;
+       // self::$primaryKey = $id;
+		$class->id = $id;
+		//$class->properties = $result;
+        return $class;
     }
 
 
@@ -151,11 +154,12 @@ abstract class Model extends Connector
         return $result;
     }
 
-    /**
-     * Update a row in the db with a matching id
-     *
-     * @return int
-     */
+	/**
+	 * Update a row in the db with a matching id
+	 *
+	 * @param $this
+	 * @return bool|string
+	 */
     public function merge()
     {
         try {
@@ -170,23 +174,30 @@ abstract class Model extends Connector
 
             foreach ($this->properties as $key => $value) {
                 $count++;
+				if($key == 'id') {
+					continue;
+				}
                 $sql .= "$key = ?";
                 if ($count < count($this->properties)) {
                     $sql .= ", ";
                 }
             }
 
-            $sql .= "WHERE " .self::$primaryKey ." = ?";
-
+            $sql .= " WHERE " .self::$primaryKey ." = ?";
             $statement = $connection->prepare($sql);
 
             $indexCount = 0;
             foreach ($this->properties as $key => $value) {
-                $indexCount++;
+
+				if($key === 'id') {
+					continue;
+				}
+				++$indexCount;
+
                 $statement->bindValue($indexCount, $value);
             }
 
-            $statement->bindValue(++$indexCount, self::$primaryKey);
+            $statement->bindValue(++$indexCount, $this->id);
 
             $result = $statement->execute();
         } catch (PDOException $e) {
@@ -203,29 +214,29 @@ abstract class Model extends Connector
      */
     public static function destroy($id)
     {
-        $table = self::$tableName;
-        $rowCount = 0;
+        $table = static::getTable();
+        $result = false;
 
         try {
             $connection = static::createConnection();
         } catch (PDOException $e) {
-            throw new DatabaseException($e);
+            return $e->getMessage();
         }
 
         try {
-            $statement = $connection->prepare("DELETE FROM {$table} WHERE ID = ?");
+			$sql = "DELETE FROM {$table} WHERE id = ?";
+            $statement = $connection->prepare($sql);
             if ($statement) {
                 $statement->bindParam(1, $id);
-                $statement->execute();
-                $rowCount = $statement->rowCount();
+                $result = $statement->execute();
             }
         } catch (PDOException $e) {
-            throw new DatabaseException($e);
+           throw new DatabaseException($e);
         } finally {
             $statement    = null;
             $connection = null;
         }
-        return $rowCount;
+        return $result;
     }
 
 
@@ -320,7 +331,7 @@ abstract class Model extends Connector
      */
     public function exists()
     {
-        if (self::$resultSet) {
+        if ($this->id) {
             return true;
         } else {
             return false;

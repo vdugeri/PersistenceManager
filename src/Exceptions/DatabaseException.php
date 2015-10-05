@@ -13,14 +13,15 @@ use PDOException;
 class DatabaseException extends PDOException {
 
 
-	private $message;
-	private $code;
+	protected $message;
+	protected $code;
 	public function __construct(PDOException $e)
 	{
 		if(strstr($e->getMessage(), 'SQLSTATE[')) {
 			preg_match('/SQLSTATE\[(\w+)\] \[(\w+)\] (.*)/', $e->getMessage(), $matches);
-			$this->code = ($matches[1] == 'HT000' ? $matches[2] : $matches[1]);
-			$this->message = $matches[3];
+			var_dump($matches);
+			//$this->code = ($matches[1] == 'HT000' ? $matches[2] : $matches[1]);
+			//$this->message = $matches[3];
 		}
 	}
 

@@ -9,7 +9,17 @@
 require_once('vendor/autoload.php');
 
 use Verem\User;
-print_r(User::all());
+
+
+try{
+
+	$result = User::destroy(8);
+	die((bool)$result);
+}catch(\Verem\Persistence\Exceptions\DatabaseException $e) {
+	echo $e->getErrorMessage();
+}
+
+
 
 
 

@@ -8,8 +8,10 @@
 
 namespace Verem\persistence\Test;
 
+
 use Verem\persistence\Comment;
 use Verem\Persistence\Exceptions\DatabaseException;
+use Mockery;
 use Verem\User;
 
 class ModelTest extends \PHPUnit_Framework_TestCase {
@@ -20,6 +22,12 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testModelCanBeCreated()
 	{
+
+/*		$mock = Mockery::mock('Verem\User');
+		$mock->shouldReceive('p')
+			->once()
+		->andReturn(1);
+*/
 		$user = new User();
 		$user->username = "verem";
 		$user->password = "password";
@@ -27,6 +35,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertTrue($inserted);
 	}
+
 
 	public function testModelCanBeFound()
 	{
@@ -47,10 +56,10 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$user->password = "password";
 		$user->save();
 
-		$user::destroy(1);
-		$users = User::all();
-		var_dump($users);
-		$this->assertNotContains('verem', $users);
+		$result = $user::destroy(1);
+
+		$this->assertTrue($result);
+
 
 	}
 
