@@ -50,11 +50,16 @@ $user->save();
 $result = User::destroy($id):
 ````````
 
-- Find a model based on column value
+- Find a model based on column value - Returns an object
 
 ```````
 $user = User::where('username', 'john');
 ``````
+- Find all users in the database - Returns object array
+
+````````
+$users = User::all();
+````````
 
 
 
