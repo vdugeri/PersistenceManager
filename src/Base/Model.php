@@ -152,7 +152,6 @@ abstract class Model extends Connector
 	/**
 	 * Update a row in the db with a matching id
 	 *
-	 * @param $this
 	 * @return bool|string
 	 */
     public function merge()
@@ -335,6 +334,9 @@ abstract class Model extends Connector
         }
     }
 
+	/**
+	 * @return array
+	 */
 	public function getProperties()
 	{
 		return $this->properties;

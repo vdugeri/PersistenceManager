@@ -4,12 +4,20 @@
  * @author : Verem Dugeri
  * Date: 9/26/15
  * Time: 9:05 AM
+ *
+ *
+ * Maps singulars of words to plurals and
+ * vice versa, using regular expressions.
  */
 
 namespace Verem\persistence\Base;
 
 class Inflect
 {
+	/**
+	 * @var array Map singular patters to their
+	 * plural postfixes
+	 */
     public static $plural = array(
       '/(quiz)$/i'               => "$1zes",
       '/^(ox)$/i'                => "$1en",
@@ -32,6 +40,10 @@ class Inflect
       '/$/'                      => "s"
     );
 
+	/**
+	 * @var array Map singular words to their plural
+	 * postfixes
+	 */
     public static $singular = array(
       '/(quiz)zes$/i'             => "$1",
       '/(matr)ices$/i'            => "$1ix",
@@ -63,6 +75,10 @@ class Inflect
       '/s$/i'                     => ""
     );
 
+	/**
+	 * @var array Plural and singular for
+	 * irregular nouns
+	 */
     public static $irregular = array(
       'move'   => 'moves',
       'foot'   => 'feet',
@@ -75,6 +91,11 @@ class Inflect
       'valve'  => 'valves'
     );
 
+	/**
+	 * @var array
+	 *
+	 * array of matches for uncountable nouns
+	 */
     public static $uncountable = array(
       'sheep',
       'fish',
@@ -88,6 +109,12 @@ class Inflect
     );
 
 
+	/**
+	 * @param $string
+	 * @return mixed
+	 *
+	 * pluralize a string
+	 */
     public static function pluralize($string)
     {
         // save some time in the case that singular and plural are the same

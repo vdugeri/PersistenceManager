@@ -31,14 +31,16 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('name', $properties);
 		$this->assertTrue($model->save());
 		$this->assertNotEmpty($model->getProperties());
-
 	}
 
+	/**
+	 * Test if the tables are set correctly
+	 */
 	public function testTableSetOperation()
 	{
 		$connection = Mockery::mock('Verem\Persistence\Connector');
 		$model = Mockery::mock('Verem\Persistence\Model');
-		$model->shouldReceive('createConnections')
+		$model->shouldReceive('createConnection')
 			->once()
 			->andReturn($connection);
 
@@ -48,6 +50,9 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$this->assertNotEquals('persistence_model_stub', $table);
 	}
 
+	/**
+	 * Test for attribute manipulation
+	 */
 	public function testAttributesCanBeManipulated()
 	{
 		$model = new PersistenceModelStub();
@@ -73,6 +78,9 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	}
 
 
+	/**
+	 * Test to see if a new instance has unpopulated properties
+	 */
 	public function testNewInstanceCreatesInstanceWithoutAttributes()
 	{
 		$model = new PersistenceModelStub();
@@ -84,6 +92,9 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	}
 
 
+	/**
+	 * Mock the testing of finding a model from the database
+	 */
 	public function testModelCanBeFound()
 	{
 		$mock = Mockery::mock('Verem\Persistence\Test\PersistenceModelFindStub');
@@ -93,10 +104,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 	}
 
+	/**
+	 * Mock the test for deletion
+	 */
 	public function testModelCanBeDeleted()
 	{
 		$mock = Mockery::mock('Verem\persistence\Base\Model\PersistenceModelDeleteStub');
-		$mock->shouldReceive('delete')
+		$mock->shouldReceive('destroy')
 		  ->with(1)
 		  ->once()
 		  ->andReturn(true);
@@ -104,6 +118,12 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 }
 
+/**
+ * Class PersistenceModelSaveStub
+ * @package Verem\Persistence\Test
+ *
+ * Stub for testing savaing a model to database
+ */
 class PersistenceModelSaveStub extends Model
 {
 	protected $properties = [];
