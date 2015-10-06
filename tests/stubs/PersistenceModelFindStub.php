@@ -15,6 +15,6 @@ class PersistenceModelFindStub extends Model
 
 	public static function find($id)
 	{
-
+		return 'foo';
 	}
 }
