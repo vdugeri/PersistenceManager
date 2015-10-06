@@ -18,7 +18,6 @@ abstract class Model extends Connector
     protected static $primaryKey = 'id';
     protected static $tableName;
     protected $properties = [];
-    private static $resultSet = false;
 
     /**
      * @return string
@@ -253,7 +252,7 @@ abstract class Model extends Connector
 
 			$splittedString = $splitter->format();
 
-			return Inflect::pluralize($splittedString);
+			self::$tableName = Inflect::pluralize($splittedString);
 		}
 
 		return self::$tableName;
@@ -335,4 +334,9 @@ abstract class Model extends Connector
             return false;
         }
     }
+
+	public function getProperties()
+	{
+		return $this->properties;
+	}
 }
