@@ -68,7 +68,7 @@ Please check out [CONTRIBUTING](CONTRIBUTING.md) file for detailed contribution 
 PersistenceManager is maintained by `Verem Dugeri`.
 
 ## License
-Urban dictionary is released under the MIT Licence. See the bundled [LICENSE](LICENSE.md) file for more details.
+Persistence is released under the MIT Licence. See the bundled [LICENSE](LICENSE.md) file for more details.
 
 
 
