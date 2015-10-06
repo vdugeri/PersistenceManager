@@ -95,17 +95,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 	public function testModelCanBeDeleted()
 	{
-
-	}
-
-	public function testModelCanBeFoundWithColumn()
-	{
 		$mock = Mockery::mock('Verem\persistence\Base\Model\PersistenceModelDeleteStub');
 		$mock->shouldReceive('delete')
-			->with(1)
-			->once()
-			->andReturn(true);
+		  ->with(1)
+		  ->once()
+		  ->andReturn(true);
 	}
+
 }
 
 class PersistenceModelSaveStub extends Model
