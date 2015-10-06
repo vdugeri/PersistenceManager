@@ -1,5 +1,5 @@
 #Persistence Manager
-Persistence Manager is lightweight ORM based on concepts
+Persistence Manager is a lightweight ORM based on concepts
 borrowed from the laravel framework
 
 
