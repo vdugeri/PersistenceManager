@@ -8,10 +8,10 @@
 
 require_once('vendor/autoload.php');
 
-use Verem\User;
+use Verem\Persistence\User;
 
 $user = new User();
-$user->username = "Ter";
+$user->username = "Terry";
 $user->password = "pass";
 $user->email = "ter@terry.dom";
 $user->save();

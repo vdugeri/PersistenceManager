@@ -43,7 +43,6 @@ abstract class Connector
 		static::initConfig();
 		try{
 			return new PDO(self::$dsn, self::$username, self::$password,self::$options );
-
 		} catch (PDOException $e) {
 			return $e->getMessage();
 		}
