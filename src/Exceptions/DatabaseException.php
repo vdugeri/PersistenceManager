@@ -19,9 +19,9 @@ class DatabaseException extends PDOException {
 	{
 		if(strstr($e->getMessage(), 'SQLSTATE[')) {
 			preg_match('/SQLSTATE\[(\w+)\] \[(\w+)\] (.*)/', $e->getMessage(), $matches);
-			var_dump($matches);
-			//$this->code = ($matches[1] == 'HT000' ? $matches[2] : $matches[1]);
-			//$this->message = $matches[3];
+
+			$this->code = ($matches[1] == 'HT000' ? $matches[2] : $matches[1]);
+			$this->message = $matches[3];
 		}
 	}
 
