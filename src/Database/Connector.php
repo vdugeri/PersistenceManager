@@ -33,22 +33,36 @@ abstract class Connector
 	 */
 	private static $password;
 
+	/**
+	 * @var $options Database connection configs
+	 */
 	private static $options;
 
-
+	/**
+	 * @var $dotEnv
+	 *  The environment variables
+	 */
 	private static $dotEnv;
 
+	/**
+	 * Create a connection to the database
+	 *
+	 * @return PDO|string
+	 */
 	public static function createConnection()
 	{
 		static::initConfig();
 		try{
 			return new PDO(self::$dsn, self::$username, self::$password,self::$options );
-
 		} catch (PDOException $e) {
 			return $e->getMessage();
 		}
 	}
 
+	/**
+	 * Initialize database configurations. Read from
+	 * the environment variables
+	 */
 	public function initConfig()
 	{
 		self::$dotEnv = new EnvReader();

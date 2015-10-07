@@ -18,7 +18,6 @@ abstract class Model extends Connector
     protected static $primaryKey = 'id';
     protected static $tableName;
     protected $properties = [];
-    private static $resultSet = false;
 
     /**
      * @return string
@@ -153,7 +152,6 @@ abstract class Model extends Connector
 	/**
 	 * Update a row in the db with a matching id
 	 *
-	 * @param $this
 	 * @return bool|string
 	 */
     public function merge()
@@ -253,7 +251,7 @@ abstract class Model extends Connector
 
 			$splittedString = $splitter->format();
 
-			return Inflect::pluralize($splittedString);
+			self::$tableName = Inflect::pluralize($splittedString);
 		}
 
 		return self::$tableName;
@@ -335,4 +333,12 @@ abstract class Model extends Connector
             return false;
         }
     }
+
+	/**
+	 * @return array
+	 */
+	public function getProperties()
+	{
+		return $this->properties;
+	}
 }

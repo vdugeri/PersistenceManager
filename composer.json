@@ -34,8 +34,18 @@
   },
 
   "autoload-dev":{
+    "classmap": [
+      "tests/"
+    ],
+
     "psr-4": {
-      "Verem\\persistence\\Test\\": "tests/"
+      "Verem\\Persistence\\Test\\": "tests/"
     }
-  }
+  },
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/andela-vdugeri/PersistenceManager"
+    }
+],
 }

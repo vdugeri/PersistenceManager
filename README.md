@@ -1,5 +1,5 @@
-#Urban Dictionary
-Persistence Manager is lightweight ORM based on concepts
+#Persistence Manager
+Persistence Manager is a lightweight ORM based on concepts
 borrowed from the laravel framework
 
 
@@ -50,11 +50,16 @@ $user->save();
 $result = User::destroy($id):
 ````````
 
-- Find a model based on column value
+- Find a model based on column value - Returns an object
 
 ```````
 $user = User::where('username', 'john');
 ``````
+- Find all users in the database - Returns object array
+
+````````
+$users = User::all();
+````````
 
 
 
@@ -68,7 +73,7 @@ Please check out [CONTRIBUTING](CONTRIBUTING.md) file for detailed contribution 
 PersistenceManager is maintained by `Verem Dugeri`.
 
 ## License
-Urban dictionary is released under the MIT Licence. See the bundled [LICENSE](LICENSE.md) file for more details.
+Persistence Manager is released under the MIT Licence. See the bundled [LICENSE](LICENSE.md) file for more details.
 
 
 

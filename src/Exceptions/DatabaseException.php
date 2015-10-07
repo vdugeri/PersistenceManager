@@ -4,7 +4,12 @@
  * User: andela
  * Date: 9/29/15
  * Time: 12:04 PM
+ *
+ *
+ * Custom database exception to return specific messages
+ * for certain failures.
  */
+
 
 namespace Verem\Persistence\Exceptions;
 
@@ -25,11 +30,21 @@ class DatabaseException extends PDOException {
 		}
 	}
 
+	/**
+	 * @return mixed
+	 *
+	 * return an error message
+	 */
 	public function getErrorMessage()
 	{
 		return $this->message;
 	}
 
+	/**
+	 * @return mixed
+	 *
+	 * return a code representing an error
+	 */
 	public function getErrorCode()
 	{
 		return $this->code;
