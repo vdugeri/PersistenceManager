@@ -42,4 +42,10 @@
       "Verem\\Persistence\\Test\\": "tests/"
     }
   }
+  "repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/andela-vdugeri/PersistenceManager"
+    }
+],
 }
