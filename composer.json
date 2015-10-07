@@ -41,7 +41,7 @@
     "psr-4": {
       "Verem\\Persistence\\Test\\": "tests/"
     }
-  }
+  },
   "repositories": [
     {
         "type": "vcs",
