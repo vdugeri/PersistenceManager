@@ -6,27 +6,29 @@
  * Time: 9:30 AM
  */
 
-namespace Verem\persistence\Test;
+namespace Verem\Persistence\Test;
 
-
-use Verem\persistence\Base\Inflect;
+use Verem\Persistence\Base\Inflect;
 
 class InflectTest extends \PHPUnit_Framework_TestCase {
 
-
-	/**
+	 /**
 	 * @param $expected
 	 * @param $actual
 	 *
 	 * @dataProvider wordProvider
 	 */
-	public function testWordInflection($actual, $expected )
-	{
+	 public function testWordInflection($actual, $expected )
+	 {
 		$this->assertEquals($expected, Inflect::pluralize($actual));
-	}
+	 }
 
-	public function wordProvider()
-	{
+	 /**
+	 * @return array
+	 * data provider for the word test method
+	 */
+	 public function wordProvider()
+	 {
 		return [
 			['move', 'moves'],
 			['movie', 'movies'],
@@ -36,5 +38,5 @@ class InflectTest extends \PHPUnit_Framework_TestCase {
 			['foot', 'feet'],
 			['analysis', 'analyses']
 		];
-	}
+	 }
 }

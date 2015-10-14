@@ -6,65 +6,64 @@
  * Time: 10:26 PM
  */
 
-namespace Verem\persistence;
+namespace Verem\Persistence;
 
-use Dotenv\Dotenv;
-use PDOException;
 use PDO;
+use PDOException;
 use Verem\EnvReader;
 
-abstract class Connector
-{
+ abstract class Connector
+ {
 	/**
 	 * @var $dsn
 	 * The data-source name for the connection
 	 */
-    private static $dsn;
+     private static $dsn;
 
-	/**
+	 /**
 	 * @var $user
 	 * The username for the connection.
 	 */
-	private static $username;
+	 private static $username;
 
-	/**
+	 /**
 	 * @var $password
 	 * The database password for the connection.
 	 */
-	private static $password;
+	 private static $password;
 
-	/**
-	 * @var $options Database connection configs
+	 /**
+	 * @var array $options Database connection configs
 	 */
-	private static $options;
+	 private static $options;
 
-	/**
+	 /**
 	 * @var $dotEnv
 	 *  The environment variables
 	 */
-	private static $dotEnv;
+	 private static $dotEnv;
 
-	/**
+	 /**
 	 * Create a connection to the database
 	 *
 	 * @return PDO|string
 	 */
-	public static function createConnection()
-	{
+	 public static function createConnection()
+	 {
 		static::initConfig();
 		try{
 			return new PDO(self::$dsn, self::$username, self::$password,self::$options );
 		} catch (PDOException $e) {
 			return $e->getMessage();
 		}
-	}
+	 }
 
-	/**
+	 /**
 	 * Initialize database configurations. Read from
 	 * the environment variables
 	 */
-	public function initConfig()
-	{
+	 public function initConfig()
+	 {
 		self::$dotEnv = new EnvReader();
 		self::$dotEnv->loadEnv();
 
@@ -76,6 +75,6 @@ abstract class Connector
 		  PDO::ATTR_PERSISTENT => true,
 		  PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		];
-	}
+	 }
 
-}
+ }

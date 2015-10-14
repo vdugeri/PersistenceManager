@@ -23,45 +23,43 @@ composer require verem/persitencemanager
 
 #usage
 
-- Save a model in the database
+- Save a record to database
 
-````````
+````````php
 $user = new User();
 $user->username = "john";
 $user->password = "password";
 $user->email = "john@doe.co";
 $user->save();
 `````````
-- Find a model
+- Find a record from the database
 
-``````
+``````php
 $user = User::find($id);
 ``````
 - Update a record
 
-``````
+``````php
 $user = User::find($id);
 $user->password = "s†røngerPaSswoRd";
 $user->save();
 ``````
 - Delete a record -- returns a boolean
 
-````````
+````````php
 $result = User::destroy($id):
 ````````
 
-- Find a model based on column value - Returns an object
+- Find a record based on column value - Returns an object
 
 ```````
 $user = User::where('username', 'john');
 ``````
-- Find all users in the database - Returns object array
 
-````````
+- Find all users in the database - Returns object array
+````````php
 $users = User::all();
 ````````
-
-
 
 ## Change log
 Please check out [CHANGELOG](CHANGELOG.md) file for information on what has changed recently.

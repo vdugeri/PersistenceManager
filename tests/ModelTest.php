@@ -18,11 +18,14 @@ use Verem\Persistence\Test\PersistenceModelFindStub;
 class ModelTest extends \PHPUnit_Framework_TestCase {
 
 
-	/**
+	 /**
+	 * Test if model can be created and properties
+	 * attached to it.
+	 *
 	 * @expectedException DatabaseException;
 	 */
-	public function testModelCanBeCreated()
-	{
+	 public function testModelCanBeCreated()
+	 {
 		$model = new PersistenceModelSaveStub();
 		$model->name = "Tester";
 		$model->location = "M55";
@@ -31,13 +34,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$this->assertArrayHasKey('name', $properties);
 		$this->assertTrue($model->save());
 		$this->assertNotEmpty($model->getProperties());
-	}
+	 }
 
-	/**
-	 * Test if the tables are set correctly
+	 /**
+	 * Test if the tables are set correctly for the models
 	 */
-	public function testTableSetOperation()
-	{
+	 public function testTableSetOperation()
+	 {
 		$connection = Mockery::mock('Verem\Persistence\Connector');
 		$model = Mockery::mock('Verem\Persistence\Model');
 		$model->shouldReceive('createConnection')
@@ -48,13 +51,13 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$table =$model->getTable();
 		$this->assertEquals('persistence_model_stubs', $table);
 		$this->assertNotEquals('persistence_model_stub', $table);
-	}
+	 }
 
-	/**
-	 * Test for attribute manipulation
+	 /**
+	 * Test if model attributes can be manipulated.
 	 */
-	public function testAttributesCanBeManipulated()
-	{
+	 public function testAttributesCanBeManipulated()
+	 {
 		$model = new PersistenceModelStub();
 		$model->name = "New name";
 
@@ -75,61 +78,44 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		unset($model->email);
 		$this->assertFalse(isset($model->email));
 
-	}
+	 }
 
 
-	/**
-	 * Test to see if a new instance has unpopulated properties
+	 /**
+	 * Test to see if a new model instance has unpopulated properties
 	 */
-	public function testNewInstanceCreatesInstanceWithoutAttributes()
-	{
+	 public function testNewInstanceCreatesInstanceWithoutAttributes()
+	 {
 		$model = new PersistenceModelStub();
 
 		$this->assertEmpty($model->getProperties());
 		$this->assertEquals(0, sizeof($model->getProperties()));
 		$this->assertEquals(0, count($model->getProperties()));
 		$this->assertArrayNotHasKey('id', $model->getProperties());
-	}
+	 }
 
 
-	/**
+	 /**
 	 * Mock the testing of finding a model from the database
 	 */
-	public function testModelCanBeFound()
-	{
+	 public function testModelCanBeFound()
+	 {
 		$mock = Mockery::mock('Verem\Persistence\Test\PersistenceModelFindStub');
 		$mock->shouldReceive('find')
 			->with(1)
 			->andReturn('foo');
 
-	}
+	 }
 
-	/**
+	 /**
 	 * Mock the test for deletion
 	 */
-	public function testModelCanBeDeleted()
-	{
+	 public function testModelCanBeDeleted()
+	 {
 		$mock = Mockery::mock('Verem\persistence\Base\Model\PersistenceModelDeleteStub');
 		$mock->shouldReceive('destroy')
 		  ->with(1)
 		  ->once()
 		  ->andReturn(true);
-	}
-
-}
-
-/**
- * Class PersistenceModelSaveStub
- * @package Verem\Persistence\Test
- *
- * Stub for testing savaing a model to database
- */
-class PersistenceModelSaveStub extends Model
-{
-	protected $properties = [];
-
-	public function save()
-	{
-		return true;
-	}
+	 }
 }

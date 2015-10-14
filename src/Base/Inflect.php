@@ -10,15 +10,15 @@
  * vice versa, using regular expressions.
  */
 
-namespace Verem\persistence\Base;
+namespace Verem\Persistence\Base;
 
 class Inflect
 {
-	/**
-	 * @var array Map singular patters to their
-	 * plural postfixes
-	 */
-    public static $plural = array(
+    /**
+     * @var array $plural Map singular patters to their
+     * plural postfixes
+     */
+     public static $plural = array(
       '/(quiz)$/i'               => "$1zes",
       '/^(ox)$/i'                => "$1en",
       '/([m|l])ouse$/i'          => "$1ice",
@@ -38,13 +38,13 @@ class Inflect
       '/(us)$/i'                 => "$1es",
       '/s$/i'                    => "s",
       '/$/'                      => "s"
-    );
+     );
 
-	/**
-	 * @var array Map singular words to their plural
-	 * postfixes
-	 */
-    public static $singular = array(
+     /**
+     * @var array Map singular words to their plural
+     * postfixes
+     */
+     public static $singular = array(
       '/(quiz)zes$/i'             => "$1",
       '/(matr)ices$/i'            => "$1ix",
       '/(vert|ind)ices$/i'        => "$1ex",
@@ -73,13 +73,13 @@ class Inflect
       '/(corpse)s$/i'             => "$1",
       '/(us)es$/i'                => "$1",
       '/s$/i'                     => ""
-    );
+     );
 
-	/**
-	 * @var array Plural and singular for
-	 * irregular nouns
-	 */
-    public static $irregular = array(
+     /**
+     * @var array Plural and singular for
+     * irregular nouns
+     */
+     public static $irregular = array(
       'move'   => 'moves',
       'foot'   => 'feet',
       'goose'  => 'geese',
@@ -89,14 +89,14 @@ class Inflect
       'tooth'  => 'teeth',
       'person' => 'people',
       'valve'  => 'valves'
-    );
+     );
 
-	/**
-	 * @var array
-	 *
-	 * array of matches for uncountable nouns
-	 */
-    public static $uncountable = array(
+     /**
+     * @var array
+     *
+     * array of matches for uncountable nouns
+     */
+     public static $uncountable = array(
       'sheep',
       'fish',
       'deer',
@@ -106,18 +106,19 @@ class Inflect
       'rice',
       'information',
       'equipment'
-    );
+     );
 
 
-	/**
-	 * @param $string
-	 * @return mixed
-	 *
-	 * pluralize a string
-	 */
-    public static function pluralize($string)
-    {
-        // save some time in the case that singular and plural are the same
+     /**
+     * @param $string
+     * @return mixed
+     *
+     * pluralize a string
+     */
+     public static function pluralize($string)
+     {
+
+         // save some time in the case that singular and plural are the same
         if (in_array(strtolower($string), self::$uncountable)) {
             return $string;
         }
@@ -139,6 +140,20 @@ class Inflect
             }
         }
 
-        return $string;
-    }
+         return $string;
+     }
+
+     /**
+     * @param $pattern
+     * @param $result
+     * @param $string
+     * @return mixed
+     *
+     * If the string matches the pattern, return the
+     * resulting array value.
+     */
+     public static function matcher($pattern, $result, $string)
+     {
+         return preg_replace($pattern, $result, $string);
+     }
 }

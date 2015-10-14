@@ -1,40 +1,37 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: andela
+ * @author : Verem Dugeri
  * Date: 9/28/15
  * Time: 5:22 PM
  *
- * Read environment variables from a
- * .env file
+ * Read environment variables from .env
  */
 
 namespace Verem;
 
 use Dotenv\Dotenv;
 
-class EnvReader extends Dotenv {
+class EnvReader extends Dotenv
+{
+    /**
+     * Constructor
+     *
+     * Call the parent class and pass it the
+     * root directory as the argument.
+     */
+     public function __construct()
+     {
+         parent::__construct($_SERVER['DOCUMENT_ROOT']);
+     }
 
-	/**
-	 * @var Dotenv
-	 */
-	private $dotEnv;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->dotEnv = parent::__construct(__DIR__.'/../');
-	}
-
-	/**
-	 * @return array
-	 *
-	 * load the .env file.
-	 */
-	public function loadEnv()
-	{
-		return $this->load();
-	}
+     /**
+     * @return array
+     *
+     * load the .env file.
+     */
+     public function loadEnv()
+     {
+         return $this->load();
+     }
 }

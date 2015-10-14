@@ -30,7 +30,7 @@
     ],
     
     "psr-4": {
-      "Verem\\persistence\\": "src/",
+      "Verem\\Persistence\\": "src/",
       "Verem\\Persistence\\Base\\": "src/Base"
     }
   },
