@@ -142,18 +142,4 @@ class Inflect
 
          return $string;
      }
-
-     /**
-     * @param $pattern
-     * @param $result
-     * @param $string
-     * @return mixed
-     *
-     * If the string matches the pattern, return the
-     * resulting array value.
-     */
-     public static function matcher($pattern, $result, $string)
-     {
-         return preg_replace($pattern, $result, $string);
-     }
 }
