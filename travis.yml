@@ -15,9 +15,11 @@ matrix:
     - php: 7.0
     - php: hhvm
 
+env:
+  - DB=mysql
+
 before_script:
-  - travis_retry composer self-update
-  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-source
+  - composer install
 
 script:
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
