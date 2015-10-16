@@ -1,3 +1,6 @@
+
+[![Build Status](https://travis-ci.org/andela-vdugeri/PersistenceManager.png?branch=master)](http://travis-ci.org/andela-vdugeri/PersistenceManager)
+
 #Persistence Manager
 Persistence Manager is a lightweight ORM based on concepts
 borrowed from the laravel framework
