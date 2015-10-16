@@ -70,13 +70,13 @@ abstract class Model extends Connector
      */
       public function save()
       {
-          $id = '';
+          $modelId = '';
           if ($this->exists()) {
               $this->merge();
           } else {
-              $id =  $this->performInsert();
+              $modelId =  $this->performInsert();
           }
-          return $id;
+          return $modelId;
       }
 
      /**
@@ -170,7 +170,7 @@ abstract class Model extends Connector
          try {
              $count    =    0;
              $table    =    static::getTable();
-             $sql    =    "UPDATE ".$table." SET ";
+             $sql      =    "UPDATE ".$table." SET ";
 
              foreach ($this->properties as $key => $value) {
                  $count++;
@@ -343,7 +343,7 @@ abstract class Model extends Connector
      */
      public function exists()
      {
-         if (isset($this->id)) {
+         if ($this->id) {
              return true;
          } else {
              return false;
