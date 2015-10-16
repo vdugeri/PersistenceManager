@@ -70,13 +70,12 @@ abstract class Model extends Connector
      */
       public function save()
       {
-          $modelId = '';
+
           if ($this->exists()) {
               $this->merge();
           } else {
-              $modelId =  $this->performInsert();
+              return $this->performInsert();
           }
-          return $modelId;
       }
 
      /**
@@ -88,19 +87,15 @@ abstract class Model extends Connector
       */
       public static function find($id)
       {
-          $table        = static::getTable();
-          $result    = null;
-          $connection = null;
-          $class        = new static;
+          $table         = static::getTable();
+          $result        = null;
+          $connection    = null;
+          $class         = new static;
         //Try to get a connection to db. Throw error if connection is
         //not successful
         try {
             $connection = static::createConnection();
-        } catch (PDOException $e) {
-            return $e->getMessage();
-        }
-        //try to create a statement. Throw exception if an error occurs
-        try {
+
             $statement = $connection->prepare("SELECT * FROM {$table} WHERE id = ?");
             if ($statement) {
                 $statement->bindParam(1, $id);
@@ -127,18 +122,14 @@ abstract class Model extends Connector
      */
      public static function where($column, $value)
      {
-         $table = static::getTable();
+         $table      = static::getTable();
          $statement  = null;
          $connection = null;
          $result     = null;
 
          try {
              $connection = static::createConnection();
-         } catch (PDOException $e) {
-             throw new DatabaseException($e);
-         }
 
-         try {
              $statement = $connection->prepare("SELECT * FROM {$table} WHERE {$column} = ?");
              if ($statement) {
                  $statement->bindParam(1, $value);
@@ -164,10 +155,7 @@ abstract class Model extends Connector
      {
          try {
              $connection = static::createConnection();
-         } catch (PDOException $e) {
-             return $e->getMessage();
-         }
-         try {
+
              $count    =    0;
              $table    =    static::getTable();
              $sql      =    "UPDATE ".$table." SET ";
@@ -223,11 +211,7 @@ abstract class Model extends Connector
 
          try {
              $connection = static::createConnection();
-         } catch (PDOException $e) {
-             return $e->getMessage();
-         }
 
-         try {
              $sql = "DELETE FROM {$table} WHERE id = ?";
              $statement = $connection->prepare($sql);
              if ($statement) {
@@ -259,7 +243,7 @@ abstract class Model extends Connector
          if (! isset(self::$tableName)) {
              $splitter = new Splitter(static::getClassName());
 
-             $splittedString = $splitter->format();
+             $splittedString  = $splitter->format();
 
              self::$tableName = Inflect::pluralize($splittedString);
          }
@@ -299,27 +283,22 @@ abstract class Model extends Connector
      public function performInsert()
      {
          $table   =  $this->getTable();
-         $result = null;
+         $result  = null;
 
          try {
-             $connection =  static::createConnection();
-         } catch (PDOException $e) {
-             throw new DatabaseException($e);
-         }
-
-         try {
-             $keys = array_keys($this->properties);
+             $connection 	=  static::createConnection();
+             $keys          = array_keys($this->properties);
              $insertColumns = implode(', ', $keys);
-             $placeholders = [];
+             $placeholders  = [];
+
              foreach ($keys as $key) {
                  $placeholders[$key] = '?';
              }
 
-             $placeholders = implode(', ', $placeholders);
-
-             $sql        =    "INSERT INTO $table ($insertColumns) VALUES ($placeholders)";
-             $statement    =     $connection->prepare($sql);
-             $count        =     0;
+             $placeholders   = implode(', ', $placeholders);
+             $sql            =    "INSERT INTO $table ($insertColumns) VALUES ($placeholders)";
+             $statement      =     $connection->prepare($sql);
+             $count          =     0;
 
              foreach ($this->properties as $key => $value) {
                  ++$count;
