@@ -26,6 +26,14 @@ composer require verem/persitencemanager
 
 #usage
 
+- When creating a model, PersistenceManager maps the name of the table
+  to the Model name, replacing any camel cases with underscores
+  and replaces it with the plural form of the word.
+
+  ``````php
+    UserRole maps to table user_roles
+  ``````
+
 - Save a record to database
 
 ````````php
