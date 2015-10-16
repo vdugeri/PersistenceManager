@@ -112,7 +112,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 	 */
 	 public function testModelCanBeDeleted()
 	 {
-		$mock = Mockery::mock('Verem\persistence\Base\Model\PersistenceModelDeleteStub');
+		$mock = Mockery::mock('Verem\Persistence\Test\PersistenceModelDeleteStub');
 		$mock->shouldReceive('destroy')
 		  ->with(1)
 		  ->once()
