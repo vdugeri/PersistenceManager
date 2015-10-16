@@ -15,9 +15,9 @@ use Verem\Persistence\Exceptions\DatabaseException;
 
 abstract class Model extends Connector
 {
-    protected static $primaryKey = 'id';
-    protected static $tableName;
-    protected $properties = [];
+     protected static $primaryKey = 'id';
+     protected static $tableName;
+     protected $properties = [];
 
      /**
      * @return string
@@ -27,18 +27,18 @@ abstract class Model extends Connector
      */
      protected function getClassName()
      {
-         return substr(strrchr(static::getClass(), '\\'), 1);
+        return substr(strrchr(static::getClass(), '\\'), 1);
      }
 
-     /**
-     * @return string
-     * Return the complete name of the class including
-     * the complete namespace.
-     */
-     protected function getClass()
-     {
-         return get_called_class();
-     }
+	 /**
+	 * @return string
+	 * Return the complete name of the class including
+	 * the complete namespace.
+	 */
+	 protected function getClass()
+	 {
+		 return get_called_class();
+	 }
 
 
      /**
@@ -68,31 +68,32 @@ abstract class Model extends Connector
      * Save the model instance records into the
      * appropriate database table.
      */
-      public function save()
-      {
+	 public function save()
+     {
+		  if ($this->exists()) {
+			  $this->merge();
+		  } else {
+			  return $this->performInsert();
+		  }
+     }
 
-          if ($this->exists()) {
-              $this->merge();
-          } else {
-              return $this->performInsert();
-          }
-      }
-
-     /**
+      /**
       * @param $id
       * @return array
       *
       * Fetches a model, from the database, that
       * matches the specified $id.
       */
-      public static function find($id)
-      {
+	 public static function find($id)
+     {
           $table         = static::getTable();
           $result        = null;
           $connection    = null;
           $class         = new static;
+
         //Try to get a connection to db. Throw error if connection is
         //not successful
+
         try {
             $connection = static::createConnection();
 
@@ -109,9 +110,9 @@ abstract class Model extends Connector
             $connection  = null;
         }
 
-          $class->id = $result['id'];
-          return $class;
-      }
+	  $class->id = $result['id'];
+	  return $class;
+     }
 
      /**
      * @param $column
@@ -286,7 +287,7 @@ abstract class Model extends Connector
          $result  = null;
 
          try {
-             $connection 	=  static::createConnection();
+             $connection    =  static::createConnection();
              $keys          = array_keys($this->properties);
              $insertColumns = implode(', ', $keys);
              $placeholders  = [];
